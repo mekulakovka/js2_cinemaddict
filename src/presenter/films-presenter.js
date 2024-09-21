@@ -8,31 +8,39 @@ import FilmDetailsView from '../view/film-details-view.js';
 
 import {render} from '../render.js';
 
-const FILM_COUNT = 5;
-
 export default class FilmsPresenter {
   sortComponent = new SortView();
   filmsComponent = new FilmsView();
   filmListComponent = new FilmsListView();
   filmListContainerComponent = new FilmListContainerView();
-  //FilmCardComponent = new FilmCardView();
   filmButtomMoreComponent = new FilmButtonMoreView();
+
   filmDetailsComponent = new FilmDetailsView();
 
-  init = (container) => {
+  init = (container, filmsModel, commentsModel) => {
     this.container = container;
+    this.filmsModel = filmsModel;
+    this.commentsModel = commentsModel;
+
+    this.films = [...filmsModel.get()];
 
     render(this.sortComponent, this.container);
     render(this.filmsComponent, this.container);
     render(this.filmListComponent, this.filmsComponent.getElement());
     render(this.filmListContainerComponent, this.filmListComponent.getElement());
 
-    for (let i = 0; i < FILM_COUNT; i++) {
-      render( new FilmCardView(), this.filmListContainerComponent.getElement());
+    //console.log(this.films);
+
+    for (let i = 0; i < this.films.length; i++) {
+      //console.log(this.films[i]);
+      render(new FilmCardView(this.films[i]), this.filmListContainerComponent.getElement());
     }
 
     render(this.filmButtomMoreComponent, this.filmListComponent.getElement());
-    render(this.filmDetailsComponent, this.filmListComponent.getElement());
+
+    const comments = [...this.commentsModel.get(this.films[0])];
+
+    render(new FilmDetailsView(this.films[0], comments), this.container.parentElement);
   }; 
 
 }
